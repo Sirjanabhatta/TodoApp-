@@ -5,8 +5,18 @@ const mongoose = require('mongoose')
 
 const app = express()
 
+const bodyParser = require("body-parser")
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+app.use(bodyParser.json());
 
+
+// app.use(express.urlencoded({ extended:true }));
+//app.use(bodyparser.json())
 //connection to mongodb
+
+
 mongoose.connect("mongodb://localhost/todo_express",{
     useUnifiedTopology: true,
 
@@ -14,9 +24,9 @@ mongoose.connect("mongodb://localhost/todo_express",{
 
 // middlewares
 
-app.use(express.urlencoded({ extended:true }));
 
-app.use(express.static("public"));
+
+// app.use(express.static("public"));
 
 app.set("view engine", "ejs");
 

@@ -1,27 +1,119 @@
-<%- include("./partials/header")  %>
-<nav class="navbar navbar-light bg-light">
-    <a class="navbar-brand" href="/">Todo App</a>
-</nav>
+<%- include("./partials/header") %>
+    <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand" href="/">Todo App</a>
+    </nav>
 
-<div class="container mt-5">
-    <form action="/add/todo" method="POST" class="d-flex">
-        <input type="text" name="todo" class="form-control" placeholder="Enter Todo">
-        <input type="submit" value="Add Todo" class="btn btn-md btn-primary mx-2">
-    </form>
+    <div class="container mt-5">
+
+        <div class="btn-danger" id="err">
 
 
-    <ul class="list-group my-5">
-        <% todo.forEach(todos => { %>
-        <li class="list-group-item"><%= todos.todo %> <a href="/delete/todo/<%= todos._id %>"
-                class="btn btn-danger btn-sm">Delete</a></li>
+        </div>
+        <div class="d-flex">
+            <input id="todo" type="text" name="todo" class="form-control" placeholder="Enter Todo">
+            <input id="add" type="button" value="Add Todo" class="btn btn-md btn-primary mx-2">
 
-        <% }) %>
 
-    </ul>
+        </div>
+
+
+        <ul id="list" class="list-group my-5">
+            <% todo.forEach((todos,index)=> { %>
+                <li class="list-group-item" id=<%= todos._id %> >
+                    <%= todos.todo %>
+
+                        <input  type="button" data-todo-id="<%=todos._id%>" value="Delete Todo" class="btn btn-md btn-primary mx-2 del">
+
+                </li>
+
+                <% }) %>
+                
+
+        </ul>
+
+        <script>
+            console.log(list)
+            document.getElementById("add").addEventListener("click", (event) => {
+
+            // console.log("bef",event.target,"lll")
+
+                fetch("/add/todo", {
+                    method: "POST",
+                    headers: {
+                        "content-type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        todo: document.getElementById("todo").value
+                    })
+
+                }).then((response) => {
+
+                    // response actually contains
+                    console.log(response)
+                    console.log("hello")
+                    return response.json();
+                }).then((data) => {
+                    console.log("data is", data)
+                    const ulElement = document.getElementById("list")
+                    const newLiElement = document.createElement("li")
+                    newLiElement.classList.add("list-group-item")
+                    newLiElement.id = data.data._id
+
+
+                    newLiElement.innerHTML = data.data.todo + '  <input type="button" data-todo-id="' + data.data._id + '" value="Delete Todo" class="btn btn-md btn-primary mx-2">'
+
+                    // ulElement.appendChild(newLiElement)
+                    var firstChild = ulElement.firstChild; // Get the first child node of the <ul> element
+
+                    // Insert the new <li> element before the first child of the <ul> element
+                    ulElement.insertBefore(newLiElement, firstChild);
+                    console.log(data, 999)
+                }).catch((error) => {
+                    document.getElementById("err").innerText = "Error occurred"
+
+                })
+                console.log("1256")
+            })
+
+
+
+document.getElementById("list").addEventListener("click", (event) => {
+    console.log("hhuuuuuuu")
+   console.log("eddddddrr", event.target,"dsdsds")
+        const todoId = event.target.dataset.todoId;
+        console.log(todoId)
+        fetch("/delete/todo/" + todoId, {
+            method: "DELETE",
+            headers: {
+                "content-type": "application/json"
+            }
+        }).then((response) => {
+            return response.json();
+        }).then((data) => {
+            const deletedTodoElement = document.getElementById(todoId);
+            if (deletedTodoElement) {
+                deletedTodoElement.remove();
+                console.log("Todo deleted from UI successfully.");
+            } else {
+                console.error("Todo element not found in UI.");
+            }
+        }).catch((error) => {
+            console.error("Error occurred while deleting todo:", error);
+        });
+    
+});
+
+
+
+
+
+
+
+
+
+
+
+        </script>
+
 </div>
-
-
-
-
-
 <%- include("./partials/footer")  %>
