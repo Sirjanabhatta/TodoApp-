@@ -22,7 +22,7 @@
                 <li class="list-group-item" id=<%= todos._id %> >
                     <%= todos.todo %>
 
-                        <input  type="button" data-todo-id="<%=todos._id%>" value="Delete Todo" class="btn btn-md btn-primary mx-2 del">
+                        <input type="button"  id="deleteButton_<%= todos._id %>" data-todo-id="<%=todos._id%>" value="Delete Todo" class="btn btn-md btn-primary mx-2 del">
 
                 </li>
 
@@ -33,6 +33,7 @@
 
         <script>
             console.log(list)
+            let  buttons=  document.querySelectorAll('.del')
             document.getElementById("add").addEventListener("click", (event) => {
 
             // console.log("bef",event.target,"lll")
@@ -59,14 +60,15 @@
                     newLiElement.classList.add("list-group-item")
                     newLiElement.id = data.data._id
 
-
-                    newLiElement.innerHTML = data.data.todo + '  <input type="button" data-todo-id="' + data.data._id + '" value="Delete Todo" class="btn btn-md btn-primary mx-2">'
-
+                    newLiElement.innerHTML = data.data.todo + '  <input type="button" data-todo-id="' + data.data._id + '" value="Delete Todo" class="btn btn-md btn-primary mx-2 del">'
+                    
                     // ulElement.appendChild(newLiElement)
-                    var firstChild = ulElement.firstChild; // Get the first child node of the <ul> element
-
-                    // Insert the new <li> element before the first child of the <ul> element
-                    ulElement.insertBefore(newLiElement, firstChild);
+                    const firstChild = ulElement.firstChild; // Get the first child node of the <ul> element
+                        
+                        // Insert the new <li> element before the first child of the <ul> element
+                            ulElement.insertBefore(newLiElement, firstChild);
+                            buttons=  document.querySelectorAll('.del')
+                            refreshButtonClass()
                     console.log(data, 999)
                 }).catch((error) => {
                     document.getElementById("err").innerText = "Error occurred"
@@ -75,11 +77,13 @@
                 console.log("1256")
             })
 
-
-
-document.getElementById("list").addEventListener("click", (event) => {
-    console.log("hhuuuuuuu")
-   console.log("eddddddrr", event.target,"dsdsds")
+            refreshButtonClass()
+ function refreshButtonClass() {
+    console.log('function called')
+    buttons.forEach(button => {
+            console.log('sssss')
+    button.addEventListener('click', event => {
+        console.log("pppp",button,"8u8")
         const todoId = event.target.dataset.todoId;
         console.log(todoId)
         fetch("/delete/todo/" + todoId, {
@@ -100,8 +104,57 @@ document.getElementById("list").addEventListener("click", (event) => {
         }).catch((error) => {
             console.error("Error occurred while deleting todo:", error);
         });
-    
+    });
 });
+ }
+
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+// 
+
+
+
+
+          
+
+// document.getElementById("list").addEventListener("click", (event) => {
+//     console.log("hhuuuuuuu")
+//    console.log("eddddddrr", event.target,"dsdsds")
+//    if (event.target.classList.contains('del')) {
+//         const todoId = event.target.dataset.todoId;
+//         console.log(todoId)
+//         fetch("/delete/todo/" + todoId, {
+//             method: "DELETE",
+//             headers: {
+//                 "content-type": "application/json"
+//             }
+//         }).then((response) => {
+//             return response.json();
+//         }).then((data) => {
+//             const deletedTodoElement = document.getElementById(todoId);
+//             if (deletedTodoElement) {
+//                 deletedTodoElement.remove();
+//                console.log("Todo deleted from UI successfully.");
+//             } else {
+//                 console.error("Todo element not found in UI.");
+//             }
+//         }).catch((error) => {
+//             console.error("Error occurred while deleting todo:", error);
+//         });
+//     }  
+    
+// });
 
 
 
